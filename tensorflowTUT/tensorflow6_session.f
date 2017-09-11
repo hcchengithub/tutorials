@@ -69,3 +69,8 @@
         OK l :> ['product'] sess :> run(pop()) tib.
         l :> ['product'] sess :> run(pop()) tib. \ ==> [[12]] (<class 'numpy.ndarray'>)
         OK
+[x] 如何一口氣把所有的 python section variables 都變成 forth values? 
+    l :> keys() tib. \ ==> dict_keys(
+        ['result2', 'result', 'sess', 'product', 'matrix2', 'matrix1', 'tf']
+    ) (<class 'dict_keys'>)
+    --> (constant) 因為事情已經過去，locals() 應該都是 constant （吧？）
