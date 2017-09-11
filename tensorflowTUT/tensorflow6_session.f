@@ -31,10 +31,8 @@
         result2 = sess.run(product)
         print(result2)
 
-    push(locals())
+    outport(locals()) # 把所有 locals() 丟出去，讓外面 forth 把玩
     </py>
-
-    value l // ( -- locals ) the playground locals
     
     stop 
 
@@ -69,8 +67,10 @@
         OK l :> ['product'] sess :> run(pop()) tib.
         l :> ['product'] sess :> run(pop()) tib. \ ==> [[12]] (<class 'numpy.ndarray'>)
         OK
-[x] 如何一口氣把所有的 python section variables 都變成 forth values? 
-    l :> keys() tib. \ ==> dict_keys(
-        ['result2', 'result', 'sess', 'product', 'matrix2', 'matrix1', 'tf']
-    ) (<class 'dict_keys'>)
-    --> (constant) 因為事情已經過去，locals() 應該都是 constant （吧？）
+        
+    [x] 如何一口氣把所有的 python section variables 都變成 forth values? 
+        l :> keys() tib. \ ==> dict_keys(
+            ['result2', 'result', 'sess', 'product', 'matrix2', 'matrix1', 'tf']
+        ) (<class 'dict_keys'>)
+        --> (constant) 因為事情已經過去，locals() 應該都是 constant （吧？）
+        --> outportLocals()
