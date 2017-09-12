@@ -27,16 +27,18 @@
     # sess.close() 故意不 close, 傳回 locals() 玩玩看...
 
     # method 2
-    with tf.Session() as sess:
-        result2 = sess.run(product)
+    with tf.Session() as sess2:
+        result2 = sess2.run(product)
         print(result2)
 
-    push(locals())
+    outport(locals())
     </py>
-
-    value l // ( -- locals ) the playground locals
     
     stop 
+    
+    [x] 為何 tensorflow6_session.f 的 sess
+        被 closed? ──> 因為它自己程式重複用了 sess 第二次關的！ ha ha haha
+        [x] 證實 <== Yes 第二個改名叫 sess2 就好了。
 
     OK l :> keys() .  # 注意, 不是 dir 看到的 attributes.
     dict_keys(['result2', 'result', 'sess', 'product', 'matrix2', 'matrix1', 'tf'])OK

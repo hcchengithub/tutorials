@@ -1,8 +1,6 @@
 
     --- marker ---
     
-    py: vm.debug='2222' \ '0011223344556677881213992222gghhiijjkk'
-    
     <py>
     # View more python tutorial on my Youtube and Youku channel!!!
 
@@ -16,31 +14,24 @@
     # from __future__ import print_function
     import tensorflow as tf
     import numpy as np
-    
-    prompt=00;(str(prompt) in debug and [ok(str(prompt)+'> ',locals())] or [None])[0] # breakpoint
 
+    vm.debug=[] # '00-11-22-33-44-55-66-77-88-12-13-99-2222'
+    
     # create data 
     # X - y 之間是簡單的線性關係。就是要看看 tf 能不能自己看出這個關係。
     x_data = np.random.rand(100).astype(np.float32) # 100 個
     y_data = x_data*0.1 + 0.3
-    
-    prompt=11;(str(prompt) in debug and [ok(str(prompt)+'> ',locals())] or [None])[0] # breakpoint 11>
 
     ### create tensorflow structure start ###
-    Weights = tf.Variable(tf.random_uniform([1], -1.0, 1.0))
+    # Weights = tf.Variable(tf.random_uniform([1])) # 不給範圍也可以，範圍給很寬只是需要更多迭代而已。
+    Weights = tf.Variable(tf.random_uniform([1], -100.0, 108.0))
     biases = tf.Variable(tf.zeros([1]))
 
-    prompt=22;(str(prompt) in debug and [ok(str(prompt)+'> ',locals())] or [None])[0] # breakpoint 22>
-    
     y = Weights*x_data + biases
 
-    prompt=33;(str(prompt) in debug and [ok(str(prompt)+'> ',locals())] or [None])[0] # breakpoint 33>
-
     loss = tf.reduce_mean(tf.square(y-y_data))
-    optimizer = tf.train.GradientDescentOptimizer(0.5)
+    optimizer = tf.train.GradientDescentOptimizer(0.5) # 取出 optimizer instance 
     train = optimizer.minimize(loss)
-
-    prompt=44;(str(prompt) in debug and [ok(str(prompt)+'> ',locals())] or [None])[0] # breakpoint 44>
 
     # 重複了，這行應該刪除
     # init = tf.initialize_all_variables()
@@ -49,9 +40,7 @@
     ### create tensorflow structure end ###
 
     sess = tf.Session()
-    
-    prompt=66;(str(prompt) in debug and [ok(str(prompt)+'> ',locals())] or [None])[0] # breakpoint 66>
-    
+
     # tf.initialize_all_variables() no long valid from
     # 2017-03-02 if using tensorflow >= 0.12
     
@@ -68,16 +57,20 @@
 
     for step in range(201):
         sess.run(train)
-        prompt=12;(str(prompt) in debug and [ok(str(prompt)+'> ',locals())] or [None])[0] # breakpoint 12>
-        if step % 20 == 0:
-            print(step, sess.run(Weights), sess.run(biases))
-            prompt=13;(str(prompt) in debug and [ok(str(prompt)+'> ',locals())] or [None])[0] # breakpoint 13>
+        print(step, sess.run(Weights), sess.run(biases))
+        prompt=13;(str(prompt) in debug and [ok(str(prompt)+'> ',locals())] or [None])[0] # breakpoint 13>
             
     prompt=2222;(str(prompt) in debug and [ok(str(prompt)+'> ',locals())] or [None])[0] # breakpoint
+    outport(locals())
     </py>
     
 
     stop 
+    
+    [x] 我從 outport 出來的 values 看出這個 sess 並沒有 closed 掉。所以可以
+        繼續 train 出更接近的結果。問題是： 為何 tensorflow6_session.f 的 sess
+        被 closed? ──> 因為它自己程式重複用了 sess 第二次關的！ ha ha haha
+        [x] 證實 <== Yes 第二個改名叫 sess2 就好了。
     
     感覺，這裡只有一顆 neuron, 即 y = Weights*x_data + biases 者。
     所謂 tf.Variable() 與一般 programming language 的 variable 意思不一樣。
