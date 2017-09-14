@@ -1,5 +1,7 @@
 
     --- marker ---
+    
+    \ include c:\Users\hcche\Documents\GitHub\Morvan\tutorials\tensorflowTUT\tensorflow8_feeds.f 
 
     <py>
     # View more python learning tutorial on my Youtube and Youku channel!!!
@@ -89,3 +91,12 @@
     
         input1 type tib. \ ==> <class 'tensorflow.python.framework.ops.Tensor'> (<class 'type'>)
         output type tib. \ ==> <class 'tensorflow.python.framework.ops.Tensor'> (<class 'type'>)
+
+
+
+
+
+
+
+
+
