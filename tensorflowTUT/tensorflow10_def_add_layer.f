@@ -6,6 +6,9 @@
     <py>
     # View more python learning tutorial on my Youtube and Youku channel!!!
 
+    # This class on Youtube https://www.youtube.com/watch?v=Vu_lIJ_Yexk
+    # Source code on GitHub https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tensorflow10_def_add_layer.py
+    
     # Youtube video tutorial: https://www.youtube.com/channel/UCdyjiB5H8Pu7aDTNVXTTpcg
     # Youku video tutorial: http://i.youku.com/pythontutorial
 
@@ -141,5 +144,199 @@
         input -> | neurons |
         
         
+Let's see how peforth assists learning a TensorFlow neural network lesson on YouTube.
+You don't need to watch it at the moment. I just let you know where is it.
+
+Tensorflow 10 example3 def add_layer() function (neural network tutorials)
+https://www.youtube.com/watch?v=Vu_lIJ_Yexk
+
+And its source code on GitHub,
+https://github.com/MorvanZhou/tutorials/blob/master/tensorflowTUT/tensorflow10_def_add_layer.py
+it's very short that we can show it all here:
+
+    from __future__ import print_function
+    import tensorflow as tf
+    def add_layer(inputs, in_size, out_size, activation_function=None):
+        Weights = tf.Variable(tf.random_normal([in_size, out_size]))
+        biases = tf.Variable(tf.zeros([1, out_size]) + 0.1)
+        Wx_plus_b = tf.matmul(inputs, Weights) + biases
+        if activation_function is None:
+            outputs = Wx_plus_b
+        else:
+            outputs = activation_function(Wx_plus_b)
+        return outputs
+
+It does almost nothing, only gets the tensorflow module and uses it to define
+a function. However, looking at the code I 
+can understand that Weights seems like a matrix initialized with random numbers. 
+I want to see whether I am correct eagerly, but nothing I can do. 
         
+Now with peforth, we can play a lot! Make a few modifications, like this:
+    
+    <py> #11
+    # from __future__ import print_function   #22
+    import tensorflow as tf
+    def add_layer(inputs, in_size, out_size, activation_function=None):
+        Weights = tf.Variable(tf.random_normal([in_size, out_size]))
+        biases = tf.Variable(tf.zeros([1, out_size]) + 0.1)
+        Wx_plus_b = tf.matmul(inputs, Weights) + biases
+        if activation_function is None:
+            outputs = Wx_plus_b
+        else:
+            outputs = activation_function(Wx_plus_b)
+        outport(locals()) #33
+        return outputs
+    outport(locals()) #44
+    </py> \ #55 
+
+Those #11, #22, .. #55 marks indicate what are modified.
+If you have read previous peforth wiki pages then you have known <py>..</py> envelops
+pythin code when in peforth FORTH environment. 
+The only thing new is the function outport() which is called two times
+above both use locals() as the input argument. What outport() does is to convert
+the given python dict into FORTH variables. Lets play with it in prior further explanations. 
+
+Install peforth,
+
+    pip install peforth 
+
+Run peforth
+    
+    python -m peforth
+    
+    p e f o r t h    v1.03
+    source code http://github.com/hcchengithub/peforth
+    Type 'peforth.ok()' enters forth interpreter, 'exit' to come back.
+
+Peforth supports multiple line input. Ctrl-C copy the above code, press Ctrl-D
+in peforth interpreter to open a multiple line input, press Ctrl-V to paste
+the code, then press the ending Ctrl-D, as shown below: (if Ctrl-V does not
+work then press Alt-Space > Edit > Paste or change your DOS Box settings)
+
+    p e f o r t h    v1.03
+    source code http://github.com/hcchengithub/peforth
+    Type 'peforth.ok()' enters forth interpreter, 'exit' to come back.
+    
+    OK ^D
+        <py> #11
+        # from __future__ import print_function   #22
+        import tensorflow as tf
+        def add_layer(inputs, in_size, out_size, activation_function=None):
+            Weights = tf.Variable(tf.random_normal([in_size, out_size]))
+            biases = tf.Variable(tf.zeros([1, out_size]) + 0.1)
+            Wx_plus_b = tf.matmul(inputs, Weights) + biases
+            if activation_function is None:
+                outputs = Wx_plus_b
+            else:
+                outputs = activation_function(Wx_plus_b)
+            outport(locals()) #33
+            return outputs
+        outport(locals()) #44
+        </py> \ #55
+    ^D
+    OK
+
+Now, let's see what happened
+
+    OK words
+    0 code end-code \ // <selftest> </selftest> bye /// immediate stop 
+    compyle trim indent -indent <py> </py> </pyV> words . cr help 
+    interpret-only compile-only literal reveal privacy (create) : ; ( 
+    ... snip ...
+    test-result [all-pass] *** OK dir keys --- add_layer tf
+    OK
+
+See the last two FORTH words "add_layer" and "tf"? They are FORTH "value"s 
+created by the 
+line: 
+
+    outport(locals()) #44
+
+At that time the tensorflow module "tf" and the function "add_layer" 
+were only local variables existing in the <py>..</py> section. And we have bring them
+out to FORTH for our examinations. Let see them in some different view angles:
+
+Their default appearance, like normal python things, are to show what they are,
+in fact their 'type':
+
+    OK tf . cr
+    <module 'tensorflow' from 'C:\\Users\\hcche\\AppData\\Local\\Programs\\Python\\Python36\\lib\\site-packages\\tensorflow\\__init__.py'>
+    
+    OK add_layer . cr
+    <function compyle_anonymous.<locals>.add_layer at 0x00000208831EFBF8>
+    
+We can even see the 'help' of the function we defined! This is a python's 
+intrinsic featrue, good to you python!
+
+    OK add_layer py: help(pop())
+    Help on function add_layer in module peforth.projectk:
+
+    add_layer(inputs, in_size, out_size, activation_function=None)
+
+While TensorFlow's help is a real epic!
+
+    OK tf py: help(pop())
+    Help on package tensorflow:
+
+    NAME
+        tensorflow
+
+    DESCRIPTION
+        # Copyright 2015 The TensorFlow Authors. All Rights Reserved.
+        #
+        # Licensed under the Apache License, Version 2.0 (the "License");
+        # you may not use this file except in compliance with the License.
+        # You may obtain a copy of the License at
+        #
+        #     http://www.apache.org/licenses/LICENSE-2.0
+        #
+        # Unless required by applicable law or agreed to in writing, software
+        # distributed under the License is distributed on an "AS IS" BASIS,
+        # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+        # See the License for the specific language governing permissions and
+        # limitations under the License.
+        # ==============================================================================
+
+    PACKAGE CONTENTS
+        contrib (package)
+        core (package)
+        examples (package)
         
+    ... snip ....
+    
+I always want to see 'type' and 'dir' of things in python to have
+a clearer picture of them:
+    
+    OK tf type . cr
+    <class 'module'>
+    
+    OK add_layer type . cr
+    <class 'function'>
+    
+    OK tf dir . cr
+    ['AggregationMethod', 'Assert', 'AttrValue', 'COMPILER_VERSION', 
+    .... snip .... 
+    'while_loop', 'write_file', 'zeros', 'zeros_initializer', 'zeros_like', 'zeta']
+    
+    OK add_layer dir . cr
+    ['__annotations__', '__call__', '__class__', '__closure__', 
+    ... snip ...
+    '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__']
+
+I'd like to go on playing with each of the above attributes for the rest of the day.
+But we have the next level of the entertainment to proceed:
+
+T.B.C.
+
+    add_layer :: ([[1.,2.,3.]],3,2)  \ 執行完，只是在布置這個 graph 而已
+    tf :> Session() value sess \ 變出一個 session 來觀察東西
+    sess :> run(v('tf').global_variables_initializer()) tib. \ ==> None (<class 'NoneType'>)
+    out_size tib. \ ==> 2 (<class 'int'>)
+    biases tib. \ ==> <tf.Variable 'Variable_1:0' shape=(1, 2) dtype=float32_ref> (<class 'tensorflow.python.ops.variables.Variable'>)
+    biases sess :> run(pop()) tib. \ ==> [[ 0.1  0.1]] (<class 'numpy.ndarray'>)
+    Weights sess :> run(pop()) tib. \ ==> 
+    [[ 0.66803414  0.62326759]
+     [-0.21582599  0.76987833]
+     [-1.09043634  0.86057591]] (<class 'numpy.ndarray'>)
+    Wx_plus_b sess :> run(pop()) tib. \ ==> [[-2.93492675  4.84475183]] (<class 'numpy.ndarray'>)
+    outputs sess :> run(pop()) tib. \ ==> [[-2.93492675  4.84475183]] (<class 'numpy.ndarray'>)
