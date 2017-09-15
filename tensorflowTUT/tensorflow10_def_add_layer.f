@@ -190,7 +190,7 @@ Now with peforth, we can play a lot! Make a few modifications, like this:
     </py> \ #55 
 
 Those #11, #22, .. #55 marks indicate what are modified.
-If you have read previous peforth wiki pages then you have known <py>..</py> envelops
+If you have read previous peforth wiki pages then you have known \<py>..\</py> envelops
 pythin code when in peforth FORTH environment. 
 The only thing new is the function outport() which is called two times
 above both use locals() as the input argument. What outport() does is to convert
@@ -239,8 +239,8 @@ work then press Alt-Space > Edit > Paste or change your DOS Box settings)
 Now, let's see what happened
 
     OK words
-    0 code end-code \ // <selftest> </selftest> bye /// immediate stop 
-    compyle trim indent -indent <py> </py> </pyV> words . cr help 
+    0 code end-code \ // \<selftest> \</selftest> bye /// immediate stop 
+    compyle trim indent -indent \<py> \</py> \</pyV> words . cr help 
     interpret-only compile-only literal reveal privacy (create) : ; ( 
     ... snip ...
     test-result [all-pass] *** OK dir keys --- add_layer tf
@@ -253,7 +253,7 @@ line:
     outport(locals()) #44
 
 At that time the tensorflow module "tf" and the function "add_layer" 
-were only local variables existing in the <py>..</py> section. And we have bring them
+were only local variables existing in the \<py>..\</py> section. And we have bring them
 out to FORTH for our examinations. Let see them in some different view angles:
 
 Their default appearance, like normal python things, are to show what they are,
@@ -323,20 +323,87 @@ a clearer picture of them:
     ... snip ...
     '__repr__', '__setattr__', '__sizeof__', '__str__', '__subclasshook__']
 
-I'd like to go on playing with each of the above attributes for the rest of the day.
-But we have the next level of the entertainment to proceed:
+It's fun to go on playing with each of the above attributes.
+But we want to look deeper into the add_layer() function. If you have read
+[]() then this line is no problem to you:
 
-T.B.C.
+    add_layer :: ([[1.,2.,3.]],3,2)  \ execute add_layer() 
+        \ inputs is [[1.,2.,3.]] which is a list of shape (1,3)
+        \ in_size is 3
+        \ out_size is 2
 
-    add_layer :: ([[1.,2.,3.]],3,2)  \ 執行完，只是在布置這個 graph 而已
-    tf :> Session() value sess \ 變出一個 session 來觀察東西
+Remember we added this line into the add_layer function?
+
+    outport(locals()) #33
+
+It makes all python local variables that can be seen at the moment 
+become FORTH values. Let's see:
+
+    OK words
+    0 code end-code \ // \<selftest> \</selftest> bye /// immediate 
+    stop compyle trim indent -indent <py> </py> </pyV> words . cr help 
+    ... snip... dir keys --- add_layer tf outputs Wx_plus_b biases Weights 
+    activation_function out_size in_size inputs tf
+    OK
+    
+Note many new words appeared from "outputs" ... to "inputs tf". The last
+"tf" has actually triggered a "reDef tf" warning to which you may have noticed. 
+That indicates the TensorFlow module is seen in add_layer() function too. 
+As the teacher, Morvan, has told us in his previous lessons, we need a TensorFlow 
+Session to see a object. So do we create it like this:
+    
+    tf :> Session() value sess // ( -- obj ) A TensorFlow session object
+
+And we need to initialize TensorFlow. I am new too so I don't know why 
+either, just do what teacher said:
+    
     sess :> run(v('tf').global_variables_initializer()) tib. \ ==> None (<class 'NoneType'>)
+
+Here, ```tib.``` command is like ``` . cr ``` but it prints the entire 
+command line and shows the type of the return value, good for studying.
+``` v('tf') ``` is the way to access the FORTH value 'rf' within python
+code. Another way to do the samething is like this:
+    
+    OK tf sess :> run(pop().global_variables_initializer()) tib.
+    tf sess :> run(pop().global_variables_initializer()) tib. \ ==> None (<class 'NoneType'>)
+    OK    
+
+But we can't use 'tf' directly like this:
+    
+    OK sess :> run(tf.global_variables_initializer()) tib.
+
+    Failed in </py> (compiling=False): name 'tf' is not defined
+    Body:
+    push(pop().run(tf.global_variables_initializer()))
+    OK
+
+Because we are no longer in add_layer() nor the outer \<py>...\</py> block. 
+However, through our FORTH values we can examine all those once existed 
+local variables in the add_layer() function:
+
     out_size tib. \ ==> 2 (<class 'int'>)
-    biases tib. \ ==> <tf.Variable 'Variable_1:0' shape=(1, 2) dtype=float32_ref> (<class 'tensorflow.python.ops.variables.Variable'>)
+    
+    biases tib. \ ==> \<tf.Variable 'Variable_1:0' shape=(1, 2) dtype=float32_ref> (<class 'tensorflow.python.ops.variables.Variable'>)
+    
     biases sess :> run(pop()) tib. \ ==> [[ 0.1  0.1]] (<class 'numpy.ndarray'>)
+    
     Weights sess :> run(pop()) tib. \ ==> 
     [[ 0.66803414  0.62326759]
      [-0.21582599  0.76987833]
      [-1.09043634  0.86057591]] (<class 'numpy.ndarray'>)
+     
     Wx_plus_b sess :> run(pop()) tib. \ ==> [[-2.93492675  4.84475183]] (<class 'numpy.ndarray'>)
+    
     outputs sess :> run(pop()) tib. \ ==> [[-2.93492675  4.84475183]] (<class 'numpy.ndarray'>)
+
+Due to FORTH programming language's simplicity in syntacs and the freedom it brings,
+I enjoy doing the exercises with peforth when studying TensorFlow or even python itself.
+
+May the FORTH be with you, and 
+Happy programming !
+
+
+
+
+
+
