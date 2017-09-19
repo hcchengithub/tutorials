@@ -171,10 +171,37 @@
     ^99> words
     sess init train_step loss prediction l1 
     ys xs y_data noise x_data add_layer np tf
+    
 ^88
     ^99> words
     sess init train_step loss prediction l1 
     ys xs y_data noise x_data add_layer np tf
+
+    --
+    OK tf :> reduce_mean py: help(pop())
+    Help on function reduce_mean in module tensorflow.python.ops.math_ops:
+
+    reduce_mean(input_tensor, axis=None, keep_dims=False, name=None, reduction_indices=None)
+        Computes the mean of elements across dimensions of a tensor.
+
+        Reduces `input_tensor` along the dimensions given in `axis`.
+        Unless `keep_dims` is true, the rank of the tensor is reduced by 1 for each
+        entry in `axis`. If `keep_dims` is true, the reduced dimensions
+        are retained with length 1.
+
+        If `axis` has no entries, all dimensions are reduced, and a
+        tensor with a single element is returned.
+
+        For example:
+
+        ```python
+        # 'x' is [[1., 1.]
+        #         [2., 2.]]
+        tf.reduce_mean(x) ==> 1.5
+        tf.reduce_mean(x, 0) ==> [1.5, 1.5]
+        tf.reduce_mean(x, 1) ==> [1.,  2.]    
+    --
+    
 ^99
     ^99> words
     sess init train_step loss prediction l1 
