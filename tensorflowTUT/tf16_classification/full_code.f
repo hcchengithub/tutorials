@@ -1,6 +1,11 @@
 
     \ include c:\Users\hcche\Documents\GitHub\Morvan\tutorials\tensorflowTUT\tf16_classification\full_code.f 
-
+    
+    \ Check working directory. It must be 'downloads' to avoid download datasets
+    \ to an unexpected location or a duplicated download
+    py> os.getcwd() :> find("ownloads")==-1 
+    [if] cr ." Working directory must be ~/downloads" cr abort [then]
+    
     --- marker ---
 
     <py>
@@ -28,6 +33,7 @@
             outputs = Wx_plus_b
         else:
             outputs = activation_function(Wx_plus_b,)
+        if debug: ok('11> ', loc=locals(), cmd=":> [0] inport") # Breakpoint 
         return outputs
 
     # define placeholder for inputs to network
@@ -59,17 +65,14 @@
     else:
         init = tf.global_variables_initializer()
     sess.run(init)
-
-    # outport(locals()); ok('11> '); # Breakpoint 
     
     for i in range(1000):
         batch_xs, batch_ys = mnist.train.next_batch(100)
         sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys})
-        outport(locals()); ok('22> '); # Breakpoint 
+        if debug: ok('22> ', loc=locals(), cmd=":> [0] inport") # Breakpoint 
         if i % 50 == 0:
             print(compute_accuracy(
                 mnist.test.images, mnist.test.labels))
-
     </py>
     
     
@@ -77,7 +80,7 @@
 
     [x] 因為會抓大量資料 working directory 用 downloads
     
-    [ ] 執行結果如下，有問題！效果陡降，卡死。 <-- 時好時壞，怎麼回事？
+    [/] 執行結果如下，有問題！效果陡降，卡死。 <-- 時好時壞，怎麼回事？
     
         OK include c:\Users\hcche\Documents\GitHub\Morvan\tutorials\tensorflowTUT\tf16_classification\full_code.f
         Extracting MNIST_data\train-images-idx3-ubyte.gz
@@ -125,8 +128,8 @@
         OK        
         
     11> words ==>
-        --- init train_step cross_entropy compute_accuracy 
-        add_layer mnist input_data ys xs tf sess prediction
+        --- batch_ys batch_xs i init train_step cross_entropy 
+        compute_accuracy add_layer mnist input_data ys xs tf sess prediction
 
     11> mnist . cr
     Datasets(
@@ -247,10 +250,67 @@
             mnist :> validation.images[3] py> tuple(pop()*256) pic :: putdata(pop()) pic :: show()
             mnist :> validation.labels[3] tib.
             
-    [ ] 徹底看懂了資料，回頭 trace     
+    [x] 徹底看懂了資料，回頭 trace     
         batch_xs type tib. \ ==> <class 'numpy.ndarray'> (<class 'type'>)
         batch_xs :> shape tib. \ ==> (100, 784) (<class 'tuple'>)
         batch_ys :> shape tib. \ ==> (100, 10) (<class 'tuple'>)
     
         得知這行就是取樣而已
         batch_xs, batch_ys = mnist.train.next_batch(100)
+        
+    [ ] 看他的 loss (cross_entropy) 怎麼定義的
+        reduce_mean 就是取 array 的平均值
+            tf :> reduce_mean py: help(pop()) \ <== 看範例，有很簡單理解。
+            用 peforth 可以直接試！
+            sess :> run(v('tf').reduce_mean([1.,2.])) tib. \ ==> 1.5 (<class 'numpy.float32'>)
+            sess :> run(v('tf').reduce_mean([1.,2.,3.])) tib. \ ==> 2.0 (<class 'numpy.float32'>)
+            py> 6/4 ==> 1.5
+        reduce_sum 為什麼用負的？
+            tf :> reduce_sum py: help(pop()) \ <== 看範例，有很簡單理解。
+            
+        reduction_indices 是舊 argument 即如今的 axis 
+            沒有指定 axis 就是全部平均
+            sess :> run(v('tf').reduce_mean([1.,1.],[2.,2.])) tib. \ ==> 1.5 (<class 'numpy.float32'>)
+            [0] 對 columns 一豎一豎取平均。即 axis=0
+            sess :> run(v('tf').reduce_mean([[1.,1.],[2.,2.]],reduction_indices=[0])) tib. \ ==> [ 1.5  1.5] (<class 'numpy.ndarray'>)
+            [1] 對 rows 一橫一橫取平均。即 axis=1
+            sess :> run(v('tf').reduce_mean([[1.,1.],[2.,2.]],reduction_indices=[1])) tib. \ ==> [ 1.  2.] (<class 'numpy.ndarray'>)
+        prediction 聽老師的講，猜是 10 個 digit 的機率，看看。。。
+
+            
+    [ ] 看他是怎麼 evaluate 的
+
+    [ ] 查看 Neuro Network 的形狀
+        [ ] 22> Wx_plus_b :> shape . cr ==>     (?, 10)
+            22> biases :> shape . cr ==>    (1, 10)
+            22> Weights :> shape . cr ==>  (784, 10)
+            22> sess :> run(v('Weights')) . cr
+                [[-1.18724    -0.27526152 -0.98017192 ...,  0.63922352 -0.84101647
+                   0.10125981]
+                 [ 0.18985745  1.30138469 -0.08802816 ...,  0.95824087 -1.27545691
+                  -0.00200335]
+                 [ 0.87153876  0.19587995  1.14244318 ...,  0.74499661 -0.72789997
+                   1.05316412]
+                 ...,
+                 [-0.60263687  0.38503972 -0.56423479 ..., -0.00635111 -0.27689263
+                   0.49015754]
+                 [ 0.53595567  1.51750755 -0.59952027 ..., -0.44937038  1.53320849
+                  -0.40922189]
+                 [-0.74838656 -0.01508466 -0.15110037 ...,  0.66303551  0.41519049
+                  -0.58337498]]
+            22> sess :> run(v('biases')) . cr
+                [[ 0.16309452 -0.10721014  0.14430207  0.14978598  0.14420623  0.1439701
+                   0.03571264  0.15155171  0.14499798  0.02958891]]
+        [x] 從上面看起來，整個網路只有 10 顆 Neuron 
+            因為 bias 只有 10 個。
+            
+            sess :> run(v('tf').matmul(v('batch_xs'),v('Weights'))).shape . cr ==> (100, 10)
+            sess :> run(v('tf').matmul(v('batch_xs[0]'),v('Weights'))).shape . cr ==> (100, 10)
+
+            周莫烦 https://m.youtube.com/watch?list=PLXO45tsB95cKI5AIlf5TxxFPzb-0zeVZ8&v=aNjdw9w_Qyc
+            你说得对,这里的结构只是 input+output, 没有中间的 hidden layer. 
+            因为这个只是一个最简单的结构, 如果你想在之中再加上一个或多个 
+            hidden layer 都是可以的.只需要使用 add layer 的功能﻿
+            
+            
+            
