@@ -1,3 +1,280 @@
+
+[ ] rename hcche to your-user-id
+[ ] 
+
+I happily followed 
+[Morvan's tensorflow teaching videos on YouTube](https://www.youtube.com/watch?v=AhC6r4cwtq0&list=PLXO45tsB95cJHXaDKpbwr5fC_CCYylw1f&index=16) 
+all the way to episode #16 and stuck there. This lesson covers MNIST handwritten digit 
+images' recognition. Not really very difficult but the dataset itself and some 
+tensorflow functions are used and such new things are very new and they are too many to 
+me. Now let's see how peforth can help.
+
+
+This is the episode's source code<br>
+https://github.com/MorvanZhou/tutorials/tree/master/tensorflowTUT/tf16_classification
+
+
+Download the source code and edit it a little as below. Lines marked 
+with something like #11, #22, #33, .. etc, are what I have modified or added.
+
+
+    <py>  #11 @@@@@@@ start of in-line python block @@@@@@@@@
+    # View more python learning tutorial on my Youtube and Youku channel!!!
+
+    # Youtube video tutorial: https://www.youtube.com/channel/UCdyjiB5H8Pu7aDTNVXTTpcg
+    # Youku video tutorial: http://i.youku.com/pythontutorial
+
+    """
+    Please note, this code is only for python 3+. If you are using python 2+, please modify the code accordingly.
+    """
+    # from __future__ import print_function  #22 @@@@@@@@ comment out @@@@@@@@@@@
+    os.environ['TF_CPP_MIN_LOG_LEVEL']='2'   #77 @@@@@@@@ Add @@@@@@@ https://stackoverflow.com/questions/43134753/tensorflow-wasnt-compiled-to-use-sse-etc-instructions-but-these-are-availab
+    import tensorflow as tf
+    from tensorflow.examples.tutorials.mnist import input_data
+    # number 1 to 10 data
+    mnist = input_data.read_data_sets('MNIST_data', one_hot=True)
+
+    def add_layer(inputs, in_size, out_size, activation_function=None,):
+        # add one more layer and return the output of this layer
+        Weights = tf.Variable(tf.random_normal([in_size, out_size]))
+        biases = tf.Variable(tf.zeros([1, out_size]) + 0.1,)
+        Wx_plus_b = tf.matmul(inputs, Weights) + biases
+        if activation_function is None:
+            outputs = Wx_plus_b
+        else:
+            outputs = activation_function(Wx_plus_b,)
+        return outputs
+
+    def compute_accuracy(v_xs, v_ys):
+        # global prediction #33 @@@@@@@@@ comment out @@@@@@@@@@@@@@@@
+        y_pre = sess.run(prediction, feed_dict={xs: v_xs})
+        correct_prediction = tf.equal(tf.argmax(y_pre,1), tf.argmax(v_ys,1))
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        result = sess.run(accuracy, feed_dict={xs: v_xs, ys: v_ys})
+        if debug==66: ok('#66> ',loc=locals(),cmd="--- marker --- :> [0] inport") 
+        return result
+
+    # define placeholder for inputs to network
+    xs = tf.placeholder(tf.float32, [None, 784]) # 28x28
+    ys = tf.placeholder(tf.float32, [None, 10])
+
+    # add output layer
+    prediction = add_layer(xs, 784, 10,  activation_function=tf.nn.softmax)
+
+    # the error between prediction and real data
+    cross_entropy = tf.reduce_mean(-tf.reduce_sum(ys * tf.log(prediction),
+                                                  reduction_indices=[1]))       # loss
+    train_step = tf.train.GradientDescentOptimizer(0.5).minimize(cross_entropy)
+
+    sess = tf.Session()
+    # important step
+    # tf.initialize_all_variables() no long valid from
+    # 2017-03-02 if using tensorflow >= 0.12
+    if int((tf.__version__).split('.')[1]) < 12 and int((tf.__version__).split('.')[0]) < 1:
+        init = tf.initialize_all_variables()
+    else:
+        init = tf.global_variables_initializer()
+    sess.run(init)
+
+    for i in range(1000):
+        batch_xs, batch_ys = mnist.train.next_batch(100)
+        sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys})
+        if i % 50 == 0:
+            print(compute_accuracy(
+                mnist.test.images, mnist.test.labels))
+        if debug==55: ok('#55> ',loc=locals(),cmd="--- marker --- :> [0] inport") 
+    </py> \ #44 @@@@@@@@ end of in-line python block @@@@@@@@@@@ 
+
+
+Now from the folder where your MNIST data is, to avoid downlaoding it again to save your 
+time and your computer space, run peforth this way: 
+
+
+    Microsoft Windows [Version 10.0.15063]
+    (c) 2017 Microsoft Corporation. All rights reserved.
+
+    c:\Users\hcche\Downloads>python -m peforth version
+    p e f o r t h    v1.06
+    source code http://github.com/hcchengithub/peforth
+    Type 'peforth.ok()' enters forth interpreter, 'exit' to come back.
+
+
+Then ``` include ``` the tutorial source code:
+
+
+    include c:\Users\your-working-folder\full_code.py 
+    
+    
+It doesn't matter where the source code is because we include it with its 
+full pathname. You need to change the path though. We can even copy-paste the 
+above source code to peforth directly! As 
+[Example-2 inline python](https://github.com/hcchengithub/peforth/wiki/Example-2-inline-python) 
+has mentioned. Either way, the result should be like this: 
+
+    C:\Users\hcche\Downloads>python -m peforth version
+    p e f o r t h    v1.06
+    source code http://github.com/hcchengithub/peforth
+    Type 'peforth.ok()' enters forth interpreter, 'exit' to come back.
+
+    include c:\Users\hcche\Documents\GitHub\Morvan\tutorials\tensorflowTUT\tf16_classification\full_code.py
+    Extracting MNIST_data\train-images-idx3-ubyte.gz
+    Extracting MNIST_data\train-labels-idx1-ubyte.gz
+    Extracting MNIST_data\t10k-images-idx3-ubyte.gz
+    Extracting MNIST_data\t10k-labels-idx1-ubyte.gz
+    0.1243
+    0.6504
+    0.7462
+    0.7846
+    0.8057
+    0.8237
+    0.836
+    0.8407
+    0.8432
+    0.8477
+    0.8534
+    0.8569
+    0.8621
+    0.8645
+    0.8669
+    0.8682
+    0.8714
+    0.8725
+    0.8753
+    0.8766
+    OK
+
+The column of accuracy scores should be different from yours because the test 
+data is selected randomly. 
+
+Now we start to trace the source code at around the results by 
+enabling the breakpoint #55 through this command ```py: vm.debug=55``` as shown below
+and then re-run the tutorial:
+
+
+    ... snip ....
+    0.8669
+    0.8682
+    0.8714      .---------- enable breakpoint #55
+    0.8725      |
+    0.8753      |                .------- run again  
+    0.8766      v                |
+    OK py: vm.debug=55           v
+    OK include c:\Users\hcche\Documents\GitHub\Morvan\tutorials\tensorflowTUT\tf16_classification\full_code.py
+    Extracting MNIST_data\train-images-idx3-ubyte.gz
+    Extracting MNIST_data\train-labels-idx1-ubyte.gz
+    Extracting MNIST_data\t10k-images-idx3-ubyte.gz
+    Extracting MNIST_data\t10k-labels-idx1-ubyte.gz
+    0.1129
+    #55>   <-------------- stop at breakpoint #55
+
+Breakpoint #55 is at the first run of the 1000 times *for loop*.
+
+
+                    This line is the breakpoint #55 --------------------.
+    ... snip .....                                                      |
+    for i in range(1000):                                               |
+        batch_xs, batch_ys = mnist.train.next_batch(100)                |
+        sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys})    |
+        if i % 50 == 0:                                                 |
+            print(compute_accuracy(                                     |
+                mnist.test.images, mnist.test.labels))                  V
+        if debug==55: ok('#55> ',loc=locals(),cmd="--- marker --- :> [0] inport") 
+    </py> \ #44 @@@@@@@@ end of in-line python block @@@@@@@@@@@ 
+
+
+The program has run into peforth and is waiting for your command. Type ``` words ``` to see what we 
+have got. 
+
+    #55> words
+    ... snip ...
+    *** all-pass [r r] [d d] [p p] inport OK dir keys --- batch_ys batch_xs i 
+    init train_step cross_entropy compute_accuracy add_layer mnist input_data ys 
+    xs tf sess prediction 
+    #55>
+
+Did you find something interesting around the end of the above words list after the marker ``` 
+--- ```? They are all the python locals() at the breakpoint. I want to know what ``` batch_xs, 
+batch_ys = mnist.train.next_batch(100) ``` does:
+
+    #55> batch_xs . cr  #<----------- print bach_xs
+    [[ 0.  0.  0. ...,  0.  0.  0.]
+     [ 0.  0.  0. ...,  0.  0.  0.]
+     [ 0.  0.  0. ...,  0.  0.  0.]
+     ...,
+     [ 0.  0.  0. ...,  0.  0.  0.]
+     [ 0.  0.  0. ...,  0.  0.  0.]
+     [ 0.  0.  0. ...,  0.  0.  0.]]
+    #55> batch_xs type . cr  #<--------- what's bach_xs' type?
+    <class 'numpy.ndarray'>   <--------- it's a ndarray so we can see its shape  
+    #55> batch_xs :> shape . cr #<---- see its dimention
+    (100, 784)   <-------------------- Ah! a hundred handwritten images!
+    #55>                               Hint: 784 is 28x28 
+
+Visit bottom of this Wiki page 
+[Example-5 View MNIST handwritten digit images](https://github.com/hcchengithub/peforth/wiki/Example-5-View-MNIST-handwritten-digit-images)
+to view some pictures of those images. If you have PIL (actually Pillow for python 3)
+installed then let's view them hands-on:
+
+
+    \ copy paste these lines to get the 'pic' instance
+    py:~ import PIL.Image as image; push(image)
+    value image 
+    image :> new("L",(28,28)) value pic // ( -- PIL.image ) instance Gray-Level 28x28
+    
+    \ This line lets you view any MNIST image
+    mnist :> train.images[0] py> tuple(pop()*256) pic :: putdata(pop()) pic :: show()
+             |            |
+             |            '-------- index number, you can change it
+             '--------------------- 'train', 'test' or 'validation' 
+
+MNIST has 3 datasets actually. You'll find that too through this command ''' py: 
+help(v('mnist')) '''. I played a while and got some useful informations as below:
+
+    #55> mnist dir . cr
+    [...snip...
+    '__rmul__', '__setattr__', '__sizeof__', '__slots__', '__str__', '__subclasshook__', 
+    '_asdict', '_fields', '_make', '_replace', '_source', 'count', 'index', 
+    'test', 'train', 'validation']      
+      ^      ^        ^   
+      |      |        |   
+      |      |        |   
+    # What are they ????
+    # Now we know they are 3 datasets in mnist, without reading any book, just play as shown below
+
+    #55> mnist :> train . cr
+    <tensorflow.contrib.learn.python.learn.datasets.mnist.DataSet object at 0x0000024EEA70C358>
+                                                            |
+                      'train' is a dataset itself ----------'
+                      'test' too -------------------------.
+                                                          |  
+    #55> mnist :> test . cr                               |  
+    <tensorflow.contrib.learn.python.learn.datasets.mnist.DataSet object at 0x0000024EEA70C3C8>
+
+    #55> mnist :> train dir . cr
+    [...snip...
+    '_epochs_completed', '_images', '_index_in_epoch', '_labels', '_num_examples', 
+    'epochs_completed', 'images', 'labels', 'next_batch', 'num_examples']
+                         |         |         |
+      handwritten    ----'         |         '------ used in the lesson
+      digit images                 '------ what digit the image is          
+
+      
+    #55> mnist :> test dir . cr
+    [... snip ...
+    '_epochs_completed', '_images', '_index_in_epoch', '_labels', '_num_examples', 
+    'epochs_completed', 'images', 'labels', 'next_batch', 'num_examples']
+    #55>                ################## same thing different content
+
+    
+    mnist :>      train.images.shape tib. \ ==> (55000, 784) (<class 'tuple'>)
+    mnist :>       test.images.shape tib. \ ==> (10000, 784) (<class 'tuple'>)
+    mnist :> validation.images.shape tib. \ ==> (5000, 784) (<class 'tuple'>)
+    mnist :>      train.labels.shape tib. \ ==> (55000, 10) (<class 'tuple'>)
+    mnist :>       test.labels.shape tib. \ ==> (10000, 10) (<class 'tuple'>)
+    mnist :> validation.labels.shape tib. \ ==> (5000, 10) (<class 'tuple'>)
+
+Take a look and keep the above ```test.labels``` dataset's shape in your mind.
+
 batch_ys must be the 100 images' label array, let's confirm:
 
     #55> batch_ys . cr
@@ -19,11 +296,11 @@ Try to redo the ```compute_accuracy``` line,
 
      
     #55> compute_accuracy :> (v('mnist').test.images,v('mnist').test.labels) . cr
-    0.1164  <----------- Same result. Ah! the neural network and 
+    0.1129  <----------- Same result. Ah! the neural network and 
     #55>                 the inputs are all the same so this is correct.
 
     
-What about an other run of the 1000 loops? 
+What about some other run of the 1000 loops? 
 
     
     #55> i . cr   #<------------- check loop count 
@@ -38,66 +315,47 @@ What about an other run of the 1000 loops?
     0.1494    <----------- improved a little, good!!
     #55>    
 
-How to examine MNIST datasets itself has been covered by another peforth Wiki article
-so I don't repeat the details here but only list necessary information we will 
-refer to later.
-
-    
-    mnist :>      train.images.shape tib. \ ==> (55000, 784) (<class 'tuple'>)
-    mnist :>       test.images.shape tib. \ ==> (10000, 784) (<class 'tuple'>)
-    mnist :> validation.images.shape tib. \ ==> (5000, 784) (<class 'tuple'>)
-    mnist :>      train.labels.shape tib. \ ==> (55000, 10) (<class 'tuple'>)
-    mnist :>       test.labels.shape tib. \ ==> (10000, 10) (<class 'tuple'>)
-    mnist :> validation.labels.shape tib. \ ==> (5000, 10) (<class 'tuple'>)
-
-Just take a look and keep the ```test.labels``` dataset's shape in your mind.
-
-
-Now let's put another breakpoint into the ```compute_accuracy``` 
-function. This is where many learners were stuck because unfamiliar 
-tensorflow functions are involved. 
+Now let's enable breakpoint #66 in ```compute_accuracy``` function. This is where many 
+learners were blocked because unfamiliar tensorflow functions are involved. See the 
+line with '#66> ' in the following snippet? That's the peforth breakpoint we add.
 
 
     def compute_accuracy(v_xs, v_ys):
-        # global prediction #33 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        # global prediction #33 @@@@@@@@@ comment out @@@@@@@@@@@@@@@@
         y_pre = sess.run(prediction, feed_dict={xs: v_xs})
         correct_prediction = tf.equal(tf.argmax(y_pre,1), tf.argmax(v_ys,1))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         result = sess.run(accuracy, feed_dict={xs: v_xs, ys: v_ys})
-        ok('#66> ',loc=locals(),cmd="--- marker --- :> [0] inport")  #<--- here here!
+        if debug==66: ok('#66> ',loc=locals(),cmd="--- marker --- :> [0] inport") 
         return result
 
-Restar and this time we get:
+Enable breakpoint #66 and ``` exit ``` to continue and 
+it run into breakpoint #66 and stop:
 
-    #66> words
-    code end-code \ // <selftest> </selftest> bye /// immediate stop compyle trim indent -indent 
-    <py> </py> </pyV> words . cr help interpret-only compile-only literal reveal privacy (create) 
+    #55> py: vm.debug=66
+    #55> exit
+    #66>
+    #66> words    <----------- again, let's see what we have get 
     ... snip ...
-    WshShell description expected_rstack expected_stack test-result [all-pass] *** all-pass [r r] 
-    [d d] [p p] inport OK dir keys --- result accuracy correct_prediction y_pre v_ys v_xs ys xs 
-    tf sess prediction
-    #66>        
+    WshShell description expected_rstack expected_stack test-result [all-pass] 
+    *** all-pass [r r] [d d] [p p] inport OK dir keys --- result accuracy 
+    correct_prediction y_pre v_ys v_xs ys xs tf sess prediction
+    #66>        # these are locals() at the breakpoint #66
     
-We already know 'result' is accuracy, a simple float number,
+We already know 'result' is accuracy, a simple float number:
 
     #66> result . cr
-    0.1232
-    #66>     
+    0.6467
+    #66>
     
-The result is from ```accuracy``` so I guess it's a tensor:
+It is from ```accuracy``` so I guess it's a tensor:
 
     #66> accuracy type . cr
-    <class 'tensorflow.python.framework.ops.Tensor'>  #<----- Yes!
+    <class 'tensorflow.python.framework.ops.Tensor'>   <----- Yes, a tensor
     #66>    
-    
-These two lines in the recent snippet are too difficult for me to understand.
 
-
-    correct_prediction = tf.equal(tf.argmax(y_pre,1), tf.argmax(v_ys,1))
-    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
-
-So I looked at the below line and I guess ```y_pre``` must be something looks
-like the ```batch_ys``` we examined above. 
+I looked at the first line and I guess ```y_pre``` must be something looks
+like the ```batch_ys``` that we have seen above. 
 
 
     y_pre = sess.run(prediction, feed_dict={xs: v_xs})
@@ -116,38 +374,141 @@ Let's see it:
 
 
     #66> y_pre . cr
-    [[  6.91933622e-08   2.00747656e-18   6.30193564e-10 ...,   9.99999642e-01
-        7.12894721e-09   2.83089804e-07]
-     [  9.07851718e-05   3.47351881e-14   9.99897838e-01 ...,   1.42084169e-17
-        7.41278594e-09   9.73849582e-13]
-     [  6.23637275e-09   9.96605873e-01   1.88107591e-03 ...,   2.69042241e-04
-        6.04452915e-04   1.49499567e-04]
+    [[  6.48881610e-07   1.35097239e-10   3.25224070e-09 ...,   8.83159339e-01
+        2.99685299e-09   1.16489515e-01]
+     [  8.22821278e-09   5.53571863e-06   2.81200599e-04 ...,   3.39955897e-10
+        4.62827732e-09   1.44904613e-08]
+     [  6.57357450e-04   9.31985438e-01   5.40157722e-04 ...,   2.65645329e-04
+        1.91582646e-03   4.58675623e-02]
      ...,
-     [  3.42671685e-14   3.13783895e-11   3.24738614e-09 ...,   1.09460743e-05
-        3.61100276e-04   5.98182250e-03]
-     [  2.44772238e-08   1.52417360e-05   1.07234193e-07 ...,   2.05161263e-10
-        5.83166599e-01   2.05575801e-09]
-     [  2.39088645e-11   8.47887177e-18   6.42135567e-10 ...,   8.53087496e-19
-        1.02328692e-11   1.33693673e-14]]
-    #66>    
+     [  5.14789136e-08   1.92055065e-08   3.04529308e-08 ...,   1.76683103e-03
+        2.34751467e-04   2.02845689e-02]
+     [  7.99431018e-06   6.68605790e-04   2.93757269e-10 ...,   1.04946620e-03
+        1.86762610e-03   9.05633897e-06]
+     [  5.90979390e-08   1.49887464e-11   4.68753880e-09 ...,   4.85606835e-14
+        2.09792687e-11   6.00817129e-09]]
+    #66>
 
-Take a closer look:
+Take a closer look at the digit number 0 :
     
     #66> y_pre :> [0] . cr
-    [  6.91933622e-08   2.00747656e-18   6.30193564e-10   1.27546862e-09
-       1.67124732e-08   3.16384363e-09   1.27654768e-15   9.99999642e-01
-       7.12894721e-09   2.83089804e-07]
-    #66> y_pre :> [9999] . cr
-    [  2.39088645e-11   8.47887177e-18   6.42135567e-10   1.48659381e-20
-       1.83400414e-13   1.84844089e-06   9.99998093e-01   8.53087496e-19
-       1.02328692e-11   1.33693673e-14]
-    #66>
+    [  6.48881610e-07   1.35097239e-10   3.25224070e-09   1.34336180e-04
+       1.67643630e-05   6.35781544e-05   1.35790644e-04   8.83159339e-01
+       2.99685299e-09   1.16489515e-01]                   ^^^^^^^^^^^^^^ highest score
     
-Wow, awesome! Every digit has a score. 
+Awesome! Every digit has a score. 
 
-So now we know y_pre is a predicted version of MNIST.test.labels.
-The rest of ```compute_accuracy``` function must be doing the comparison between them.
-And the result is reduced to a float number, as we have seen.
+It's getting clearer that y_pre is a predicted version of v_ys. 
+Let's see v_ys :
+
+    #66> v_ys :> [0] . cr
+    [ 0.  0.  0.  0.  0.  0.  0.  1.  0.  0.]  <----- Correct! it's 7
+
+Now I want to find an incorrect or low score prediction 
+and see how the image look like. We already know the accuracy is ~87%
+at best so let's dump 20 images' in y_pre predicted and their v_ys label:
+
+
+     .------- specify the index of an image 
+     |           .------ the TOS which is the given index 1 
+     |           |                    .------ consumes the TOS which is the 1
+     v           v                    v  
+     1 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+     2 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+     3 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+     4 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+     5 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+     6 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+     7 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+     8 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+     9 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+    10 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+    11 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+    12 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+    13 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+    14 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+    15 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+    16 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+    17 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+    18 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+    19 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
+
+The above block may look strange but it's not totally new, right? We have been using 
+FORTH syntax for a while. You probably understand it already. Copy-paste 
+to run it and get the following results:
+    
+    #66> 1 y_pre :> [tos()] . cr v_ys :> [tos()] . cr cr cr
+    [  8.22821278e-09   5.53571863e-06   2.81200599e-04   1.85349958e-08
+       2.01571858e-16   3.59835127e-07   9.99712884e-01   3.39955897e-10
+       4.62827732e-09   1.44904613e-08]
+    [ 0.  0.  1.  0.  0.  0.  0.  0.  0.  0.]  # label is 2
+                                               # highest score is 6 <--- wrong!!
+
+    #66> 2 y_pre :> [tos()] . cr v_ys :> [tos()] . cr cr cr
+    [  6.57357450e-04   9.31985438e-01   5.40157722e-04   1.72531046e-02
+       2.08571029e-04   1.55871039e-05   1.29080110e-03   2.65645329e-04
+       1.91582646e-03   4.58675623e-02]
+    [ 0.  1.  0.  0.  0.  0.  0.  0.  0.  0.]
+
+
+    #66> 3 y_pre :> [tos()] . cr v_ys :> [tos()] . cr cr cr
+    [  3.16144899e-02   4.66043003e-13   5.37746792e-10   2.62485878e-06
+       3.42881640e-06   9.25924063e-01   4.21351679e-02   3.20240943e-04
+       9.71668745e-10   2.98079872e-09]
+    [ 1.  0.  0.  0.  0.  0.  0.  0.  0.  0.]  # label is 0
+                                               # highest score is 5 <--- wrong!!
+    ... snip ......
+
+
+Let's see the 3 handwritten digit images, two of them are incorrectedly predicted.
+Invoke the PIL.Image module and thus the 'pic' instance again:
+    
+    py:~ import PIL.Image as image; push(image)
+    value image 
+    image :> new("L",(28,28)) value pic // ( -- PIL.image ) instance Gray-Level 28x28
+    
+We can see any image now. Let's see the index 1:
+    
+    v_xs :> [1] py> tuple(pop()*256) pic :: putdata(pop()) pic :: show()    
+    
+Stupid computer, I don't think it looks like a 6 at all!
+And index 2:
+
+    v_xs :> [2] py> tuple(pop()*256) pic :: putdata(pop()) pic :: show()    
+
+It's a beautiful '1' and is predected correctly. And index 3:
+
+    v_xs :> [3] py> tuple(pop()*256) pic :: putdata(pop()) pic :: show()    
+
+I can see why the neural network thinks it's 5.
+
+
+    
+The rest of ```compute_accuracy``` function, 
+
+
+    correct_prediction = tf.equal(tf.argmax(y_pre,1), tf.argmax(v_ys,1))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
+
+, must be doing the comparison between y_pre v_ys. And the result is reduced to a float 
+number, as we have seen above (the 0.1129). To trace the two lines is fun too. I 
+encurage you guys to do it. You need to know that to see a tensor you have to use a 
+tf.Session() to run it. I actually wrote my own function to do the comparison and 
+got the same result. I am afraid that this page has been too long and I need some
+rests. If you have any question please leave it to the peforth's "issues" on GitHub.
+Thank you for reading, have fun!
+
+#### May the FORTH be with you!
+
+H.C. Chen @ FigTaiwan<br>
+hcchen5600@gmail.com<br>
+Just undo it!
+
+
+
+
+
 
 
     
