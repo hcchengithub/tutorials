@@ -1,0 +1,153 @@
+batch_ys must be the 100 images' label array, let's confirm:
+
+    #55> batch_ys . cr
+    [[ 0.  1.  0.  0.  0.  0.  0.  0.  0.  0.]
+     [ 0.  1.  0.  0.  0.  0.  0.  0.  0.  0.]
+     [ 0.  0.  0.  0.  1.  0.  0.  0.  0.  0.]
+     ... snip ...
+     [ 0.  0.  0.  0.  0.  0.  0.  1.  0.  0.]
+     [ 0.  1.  0.  0.  0.  0.  0.  0.  0.  0.]
+     [ 0.  0.  1.  0.  0.  0.  0.  0.  0.  0.]
+     [ 0.  1.  0.  0.  0.  0.  0.  0.  0.  0.]
+     [ 1.  0.  0.  0.  0.  0.  0.  0.  0.  0.]]  <----- Yes! labels.
+    #55> batch_ys :> shape . cr #<--------------------- confirm it's dimention
+    (100, 10)  <--------------------------------------- correct! 
+    #55>
+     
+     
+Try to redo the ```compute_accuracy``` line, 
+
+     
+    #55> compute_accuracy :> (v('mnist').test.images,v('mnist').test.labels) . cr
+    0.1164  <----------- Same result. Ah! the neural network and 
+    #55>                 the inputs are all the same so this is correct.
+
+    
+What about an other run of the 1000 loops? 
+
+    
+    #55> i . cr   #<------------- check loop count 
+    0
+    #55> exit     #<------------- stop peforth and return to python to continue
+    #55> i . cr   #<------------- check loop count, it's 1 correct
+    1
+    #55> exit
+    #55> i . cr
+    2             #<------ 2 is correct. Let's check compute_accuracy
+    #55> compute_accuracy :> (v('mnist').test.images,v('mnist').test.labels) . cr
+    0.1494    <----------- improved a little, good!!
+    #55>    
+
+How to examine MNIST datasets itself has been covered by another peforth Wiki article
+so I don't repeat the details here but only list necessary information we will 
+refer to later.
+
+    
+    mnist :>      train.images.shape tib. \ ==> (55000, 784) (<class 'tuple'>)
+    mnist :>       test.images.shape tib. \ ==> (10000, 784) (<class 'tuple'>)
+    mnist :> validation.images.shape tib. \ ==> (5000, 784) (<class 'tuple'>)
+    mnist :>      train.labels.shape tib. \ ==> (55000, 10) (<class 'tuple'>)
+    mnist :>       test.labels.shape tib. \ ==> (10000, 10) (<class 'tuple'>)
+    mnist :> validation.labels.shape tib. \ ==> (5000, 10) (<class 'tuple'>)
+
+Just take a look and keep the ```test.labels``` dataset's shape in your mind.
+
+
+Now let's put another breakpoint into the ```compute_accuracy``` 
+function. This is where many learners were stuck because unfamiliar 
+tensorflow functions are involved. 
+
+
+    def compute_accuracy(v_xs, v_ys):
+        # global prediction #33 @@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@
+        y_pre = sess.run(prediction, feed_dict={xs: v_xs})
+        correct_prediction = tf.equal(tf.argmax(y_pre,1), tf.argmax(v_ys,1))
+        accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+        result = sess.run(accuracy, feed_dict={xs: v_xs, ys: v_ys})
+        ok('#66> ',loc=locals(),cmd="--- marker --- :> [0] inport")  #<--- here here!
+        return result
+
+Restar and this time we get:
+
+    #66> words
+    code end-code \ // <selftest> </selftest> bye /// immediate stop compyle trim indent -indent 
+    <py> </py> </pyV> words . cr help interpret-only compile-only literal reveal privacy (create) 
+    ... snip ...
+    WshShell description expected_rstack expected_stack test-result [all-pass] *** all-pass [r r] 
+    [d d] [p p] inport OK dir keys --- result accuracy correct_prediction y_pre v_ys v_xs ys xs 
+    tf sess prediction
+    #66>        
+    
+We already know 'result' is accuracy, a simple float number,
+
+    #66> result . cr
+    0.1232
+    #66>     
+    
+The result is from ```accuracy``` so I guess it's a tensor:
+
+    #66> accuracy type . cr
+    <class 'tensorflow.python.framework.ops.Tensor'>  #<----- Yes!
+    #66>    
+    
+These two lines in the recent snippet are too difficult for me to understand.
+
+
+    correct_prediction = tf.equal(tf.argmax(y_pre,1), tf.argmax(v_ys,1))
+    accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
+
+So I looked at the below line and I guess ```y_pre``` must be something looks
+like the ```batch_ys``` we examined above. 
+
+
+    y_pre = sess.run(prediction, feed_dict={xs: v_xs})
+
+
+Let's check what type is it and if possible its shape:
+
+
+    #66> y_pre type . cr
+    <class 'numpy.ndarray'>
+    #66> y_pre :> shape . cr
+    (10000, 10)  <---------------- Ha! I remember this, do you?
+    #66>                           
+    
+Let's see it: 
+
+
+    #66> y_pre . cr
+    [[  6.91933622e-08   2.00747656e-18   6.30193564e-10 ...,   9.99999642e-01
+        7.12894721e-09   2.83089804e-07]
+     [  9.07851718e-05   3.47351881e-14   9.99897838e-01 ...,   1.42084169e-17
+        7.41278594e-09   9.73849582e-13]
+     [  6.23637275e-09   9.96605873e-01   1.88107591e-03 ...,   2.69042241e-04
+        6.04452915e-04   1.49499567e-04]
+     ...,
+     [  3.42671685e-14   3.13783895e-11   3.24738614e-09 ...,   1.09460743e-05
+        3.61100276e-04   5.98182250e-03]
+     [  2.44772238e-08   1.52417360e-05   1.07234193e-07 ...,   2.05161263e-10
+        5.83166599e-01   2.05575801e-09]
+     [  2.39088645e-11   8.47887177e-18   6.42135567e-10 ...,   8.53087496e-19
+        1.02328692e-11   1.33693673e-14]]
+    #66>    
+
+Take a closer look:
+    
+    #66> y_pre :> [0] . cr
+    [  6.91933622e-08   2.00747656e-18   6.30193564e-10   1.27546862e-09
+       1.67124732e-08   3.16384363e-09   1.27654768e-15   9.99999642e-01
+       7.12894721e-09   2.83089804e-07]
+    #66> y_pre :> [9999] . cr
+    [  2.39088645e-11   8.47887177e-18   6.42135567e-10   1.48659381e-20
+       1.83400414e-13   1.84844089e-06   9.99998093e-01   8.53087496e-19
+       1.02328692e-11   1.33693673e-14]
+    #66>
+    
+Wow, awesome! Every digit has a score. 
+
+So now we know y_pre is a predicted version of MNIST.test.labels.
+The rest of ```compute_accuracy``` function must be doing the comparison between them.
+And the result is reduced to a float number, as we have seen.
+
+
+    

@@ -1,5 +1,8 @@
 
+    \ T550
     \ include c:\Users\hcche\Documents\GitHub\Morvan\tutorials\tensorflowTUT\tf16_classification\full_code.f 
+    \ X1 Yoga, Lrv2 
+    \ include c:\Users\hcche\Documents\GitHub\ML\tutorials\tensorflowTUT\tf16_classification\full_code.f 
     
     \ Check working directory. It must be 'downloads' to avoid download datasets
     \ to an unexpected location or a duplicated download
@@ -9,11 +12,13 @@
     --- marker ---
 
     <py>
+
+    # English: https://www.youtube.com/watch?v=AhC6r4cwtq0&index=16&list=PLXO45tsB95cJHXaDKpbwr5fC_CCYylw1f
+
     # View more python learning tutorial on my Youtube and Youku channel!!!
-
-    # Youtube video tutorial: https://www.youtube.com/channel/UCdyjiB5H8Pu7aDTNVXTTpcg
+    # Youtube video channel: https://www.youtube.com/channel/UCdyjiB5H8Pu7aDTNVXTTpcg
     # Youku video tutorial: http://i.youku.com/pythontutorial
-
+    
     """
     Please note, this code is only for python 3+. If you are using python 2+, please modify the code accordingly.
     """
@@ -33,7 +38,7 @@
             outputs = Wx_plus_b
         else:
             outputs = activation_function(Wx_plus_b,)
-        if debug: ok('11> ', loc=locals(), cmd=":> [0] inport") # Breakpoint 
+        if debug==11: ok('11> ', loc=locals(), cmd="--- marker --- :> [0] inport") # Breakpoint 
         return outputs
 
     # define placeholder for inputs to network
@@ -49,6 +54,7 @@
         correct_prediction = tf.equal(tf.argmax(y_pre,1), tf.argmax(v_ys,1))
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
         result = sess.run(accuracy, feed_dict={xs: v_xs, ys: v_ys})
+        if debug==33: ok('33> ', loc=locals(), cmd="--- marker --- :> [0] inport") # Breakpoint 
         return result
 
     # the error between prediction and real data
@@ -69,7 +75,7 @@
     for i in range(1000):
         batch_xs, batch_ys = mnist.train.next_batch(100)
         sess.run(train_step, feed_dict={xs: batch_xs, ys: batch_ys})
-        if debug: ok('22> ', loc=locals(), cmd=":> [0] inport") # Breakpoint 
+        if debug==22: ok('22> ', loc=locals(), cmd="--- marker --- :> [0] inport") # Breakpoint 
         if i % 50 == 0:
             print(compute_accuracy(
                 mnist.test.images, mnist.test.labels))
@@ -258,15 +264,15 @@
         得知這行就是取樣而已
         batch_xs, batch_ys = mnist.train.next_batch(100)
         
-    [ ] 看他的 loss (cross_entropy) 怎麼定義的
-        reduce_mean 就是取 array 的平均值
+    [x] 看他的 loss (cross_entropy) 怎麼定義的
+        reduce_mean 就是取 array 的平均值。 Reduce 是指工作在 matrix 的某維度上。
             tf :> reduce_mean py: help(pop()) \ <== 看範例，有很簡單理解。
             用 peforth 可以直接試！
             sess :> run(v('tf').reduce_mean([1.,2.])) tib. \ ==> 1.5 (<class 'numpy.float32'>)
             sess :> run(v('tf').reduce_mean([1.,2.,3.])) tib. \ ==> 2.0 (<class 'numpy.float32'>)
             py> 6/4 ==> 1.5
-        reduce_sum 為什麼用負的？
-            tf :> reduce_sum py: help(pop()) \ <== 看範例，有很簡單理解。
+        tf :> reduce_sum py: help(pop()) \ <== 看範例，有範例很容易理解。 Reduce 是指工作在 matrix 的某維度上。
+        [ ] reduce_sum 為什麼用負的？
             
         reduction_indices 是舊 argument 即如今的 axis 
             沒有指定 axis 就是全部平均
@@ -278,10 +284,10 @@
         prediction 聽老師的講，猜是 10 個 digit 的機率，看看。。。
 
             
-    [ ] 看他是怎麼 evaluate 的
+    [x] 看他是怎麼 evaluate 的
 
-    [ ] 查看 Neuro Network 的形狀
-        [ ] 22> Wx_plus_b :> shape . cr ==>     (?, 10)
+    [x] 查看 Neuro Network 的形狀
+        [x] 22> Wx_plus_b :> shape . cr ==>     (?, 10)
             22> biases :> shape . cr ==>    (1, 10)
             22> Weights :> shape . cr ==>  (784, 10)
             22> sess :> run(v('Weights')) . cr
@@ -311,6 +317,72 @@
             你说得对,这里的结构只是 input+output, 没有中间的 hidden layer. 
             因为这个只是一个最简单的结构, 如果你想在之中再加上一个或多个 
             hidden layer 都是可以的.只需要使用 add layer 的功能﻿
-            
-            
-            
+
+[x] 察看 compute_accuracy() 內部，看他是怎麼評分的
+        33> result type . cr
+        <class 'numpy.float32'>
+        33> result tib.
+        result tib. \ ==> 0.10840000212192535 (<class 'numpy.float32'>)
+        越接近 1.00 越好。
+        
+        33> v_xs . cr    這是 test dataset 共有 10000 張圖片跟相對的 labels 
+        [[ 0.  0.  0. ...,  0.  0.  0.]
+         [ 0.  0.  0. ...,  0.  0.  0.]
+         [ 0.  0.  0. ...,  0.  0.  0.]
+         ...,
+         [ 0.  0.  0. ...,  0.  0.  0.]
+         [ 0.  0.  0. ...,  0.  0.  0.]
+         [ 0.  0.  0. ...,  0.  0.  0.]]
+        33> v_xs :> shape tib.
+        v_xs :> shape tib. \ ==> (10000, 784) (<class 'tuple'>)
+        33> v_ys :> shape tib.
+        v_ys :> shape tib. \ ==> (10000, 10) (<class 'tuple'>)
+
+        compute_accuracy() 應該就是算出自己的 labels （即 y_pre）來跟 v_ys 比較。
+
+        y_pre :> shape tib. \ ==> (10000, 10) (<class 'tuple'>)
+        所以驗證的時候是用 test dataset 這一萬張整批去驗。
+        一把就拿到 prediction() 打出來的一萬組 labels. 這一萬組 labels 對不對呢？
+        要打分數來看看。
+
+        這幾個都是 Tensor 想看要用 sess.run 過
+        prediction type tib. \ ==> <class 'tensorflow.python.framework.ops.Tensor'> (<class 'type'>)
+        correct_prediction tib. \ ==> Tensor("Equal:0", shape=(10000,), dtype=bool) (<class 'tensorflow.python.framework.ops.Tensor'>)
+        accuracy type tib. \ ==> <class 'tensorflow.python.framework.ops.Tensor'> (<class 'type'>)
+
+        result 是一萬組 label 的正確率，
+            result = sess.run(accuracy, feed_dict={xs: v_xs, ys: v_ys})
+        所以想必 accuracy 就是 分子/分母，分母是 10000，分子是正確 labels 的個數。
+        或者 mean([0,0,0,1,0,0,0,1,1,1,...]) 標好對錯的每一組 predicted labels. <------ 就是 correct_prediction
+           
+        sess :> run(v('correct_prediction')) tib. \ ==> [False False False ...,  True False False] (<class 'numpy.ndarray'>)
+        sess :> run(v('correct_prediction')).shape tib. \ ==> (10000,) (<class 'tuple'>)
+
+        驗算一下這組 correct_prediction 的平均值
+        sess :> run(v('correct_prediction')) constant c-p // ( -- array ) correct_prediction array
+
+        py>~ [(i and 1 or 0) for i in v('c-p')]
+        constant CP // ( array ) cooked correct_prediction array
+        CP count tib. \ ==> 10000 (<class 'int'>)
+        py> sum(v('CP')) tib. \ ==> 1084 (<class 'int'>)
+        對了嗎？ 對了！！！
+        
+        所以確定 correct_prediction 就是上面猜測的東西了，標注如上。
+        
+        查 tf.argmax 啥東西。。。不用查，看下面跑出來的結果就懂了。
+        sess :> run(v('tf').argmax(v('y_pre'),1)) tib. \ ==> [9 6 0 ..., 4 6 4] (<class 'numpy.ndarray'>)
+        y_pre :> [0] tib. \ ==> [  1.48504273e-06   5.44097857e-04   5.17828780e-10   1.10162538e-03
+           2.71292418e-01   2.83548925e-05   3.12378006e-07   1.44847242e-12
+           1.23969920e-01   6.03061795e-01] (<class 'numpy.ndarray'>)
+        y_pre :> [1] tib. \ ==> [  2.92419777e-09   1.19141513e-03   1.52244556e-05   1.04044523e-10
+           1.69087325e-05   2.00210451e-07   9.98776257e-01   1.76555463e-14
+           9.76547334e-14   1.08488241e-09] (<class 'numpy.ndarray'>)
+        y_pre :> [2] tib. \ ==> [  3.69310051e-01   2.60156579e-03   4.57426831e-02   3.63132894e-01
+           9.81909011e-07   1.96541101e-01   5.33089601e-03   1.19020171e-09
+           1.64527833e-07   1.73395965e-02] (<class 'numpy.ndarray'>)
+        
+        那這樣我猜得到 tf.cast() 的用意了，跟我上面一樣，把 
+        correct_prediction cast 成 tf.float32
+        
+        tf.cast(correct_prediction, tf.float32) 改寫成 peforth 的語法如下，得證:
+        sess :> run(v('tf').cast(v('correct_prediction'),v('tf').float32)) tib. \ ==> [ 0.  0.  0. ...,  1.  0.  0.] (<class 'numpy.ndarray'>)
