@@ -1,13 +1,11 @@
 
-[ ] rename hcche to your-user-id
-[ ] 
-
 I happily followed 
-[Morvan's tensorflow teaching videos on YouTube](https://www.youtube.com/watch?v=AhC6r4cwtq0&list=PLXO45tsB95cJHXaDKpbwr5fC_CCYylw1f&index=16) 
-all the way to episode #16 and stuck there. This lesson covers MNIST handwritten digit 
-images' recognition. Not really very difficult but the dataset itself and some 
-tensorflow functions are used and such new things are very new and they are too many to 
-me. Now let's see how peforth can help.
+[Morvan's Tensorflow teaching videos on YouTube](https://www.youtube.com/watch?v=AhC6r4cwtq0&list=PLXO45tsB95cJHXaDKpbwr5fC_CCYylw1f&index=16) 
+all the way to episode #16 and stuck there. That lesson covers MNIST handwritten digit 
+images' recognition. Not very difficult but the dataset itself and some Tensorflow 
+functions are used and such new things are blended and they are too many to me. Now 
+let's see how peforth can help. This page looks long but there are actually only two 
+hundreds more lines if remove screen dumps and repeated code snippets.
 
 
 This is the episode's source code<br>
@@ -86,8 +84,8 @@ with something like #11, #22, #33, .. etc, are what I have modified or added.
     </py> \ #44 @@@@@@@@ end of in-line python block @@@@@@@@@@@ 
 
 
-Now from the folder where your MNIST data is, to avoid downlaoding it again to save your 
-time and your computer space, run peforth this way: 
+Now from the folder, to avoid downlaoding it again for saving your time and your 
+computer space, where your MNIST data is run peforth this way: 
 
 
     Microsoft Windows [Version 10.0.15063]
@@ -105,9 +103,9 @@ Then ``` include ``` the tutorial source code:
     include c:\Users\your-working-folder\full_code.py 
     
     
-It doesn't matter where the source code is because we include it with its 
+It doesn't matter where the code is because we ``` include ``` it with its 
 full pathname. You need to change the path though. We can even copy-paste the 
-above source code to peforth directly! As 
+above code to peforth directly! As 
 [Example-2 inline python](https://github.com/hcchengithub/peforth/wiki/Example-2-inline-python) 
 has mentioned. Either way, the result should be like this: 
 
@@ -116,7 +114,7 @@ has mentioned. Either way, the result should be like this:
     source code http://github.com/hcchengithub/peforth
     Type 'peforth.ok()' enters forth interpreter, 'exit' to come back.
 
-    include c:\Users\hcche\Documents\GitHub\Morvan\tutorials\tensorflowTUT\tf16_classification\full_code.py
+    include c:\Users\your-working-folder\full_code.py
     Extracting MNIST_data\train-images-idx3-ubyte.gz
     Extracting MNIST_data\train-labels-idx1-ubyte.gz
     Extracting MNIST_data\t10k-images-idx3-ubyte.gz
@@ -159,7 +157,7 @@ and then re-run the tutorial:
     0.8753      |                .------- run again  
     0.8766      v                |
     OK py: vm.debug=55           v
-    OK include c:\Users\hcche\Documents\GitHub\Morvan\tutorials\tensorflowTUT\tf16_classification\full_code.py
+    OK include c:\Users\your-working-folder\full_code.py
     Extracting MNIST_data\train-images-idx3-ubyte.gz
     Extracting MNIST_data\train-labels-idx1-ubyte.gz
     Extracting MNIST_data\t10k-images-idx3-ubyte.gz
@@ -192,9 +190,13 @@ have got.
     xs tf sess prediction 
     #55>
 
-Did you find something interesting around the end of the above words list after the marker ``` 
---- ```? They are all the python locals() at the breakpoint. I want to know what ``` batch_xs, 
-batch_ys = mnist.train.next_batch(100) ``` does:
+Did you find something interesting at the end of the above words list after the marker 
+``` --- ```? They are all the python locals() that can be seen at the breakpoint. I 
+want to know what the below line does? 
+
+    batch_xs, batch_ys = mnist.train.next_batch(100)
+    
+We can print the results and see:
 
     #55> batch_xs . cr  #<----------- print bach_xs
     [[ 0.  0.  0. ...,  0.  0.  0.]
@@ -206,17 +208,17 @@ batch_ys = mnist.train.next_batch(100) ``` does:
      [ 0.  0.  0. ...,  0.  0.  0.]]
     #55> batch_xs type . cr  #<--------- what's bach_xs' type?
     <class 'numpy.ndarray'>   <--------- it's a ndarray so we can see its shape  
-    #55> batch_xs :> shape . cr #<---- see its dimention
+    #55> batch_xs :> shape . cr    #<---- see its dimention
     (100, 784)   <-------------------- Ah! a hundred handwritten images!
     #55>                               Hint: 784 is 28x28 
 
 Visit bottom of this Wiki page 
 [Example-5 View MNIST handwritten digit images](https://github.com/hcchengithub/peforth/wiki/Example-5-View-MNIST-handwritten-digit-images)
-to view some pictures of those images. If you have PIL (actually Pillow for python 3)
-installed then let's view them hands-on:
+to view some pictures of those MNIST images. If you have PIL (actually Pillow for python 3)
+installed then let's hands-on to view them:
 
 
-    \ copy paste these lines to get the 'pic' instance
+    \ copy-paste these lines to get the 'pic' instance
     py:~ import PIL.Image as image; push(image)
     value image 
     image :> new("L",(28,28)) value pic // ( -- PIL.image ) instance Gray-Level 28x28
@@ -224,11 +226,11 @@ installed then let's view them hands-on:
     \ This line lets you view any MNIST image
     mnist :> train.images[0] py> tuple(pop()*256) pic :: putdata(pop()) pic :: show()
              |            |
-             |            '-------- index number, you can change it
+             |            '-------- index number of the image you want to see
              '--------------------- 'train', 'test' or 'validation' 
 
-MNIST has 3 datasets actually. You'll find that too through this command ''' py: 
-help(v('mnist')) '''. I played a while and got some useful informations as below:
+MNIST has 3 datasets actually. You'll find that too through this command ``` py: 
+help(v('mnist')) ```. I played a while and have got some useful informations as below:
 
     #55> mnist dir . cr
     [...snip...
@@ -239,7 +241,7 @@ help(v('mnist')) '''. I played a while and got some useful informations as below
       |      |        |   
       |      |        |   
     # What are they ????
-    # Now we know they are 3 datasets in mnist, without reading any book, just play as shown below
+    # Now we know, without reading any book just play as shown below, they are 3 datasets in mnist.
 
     #55> mnist :> train . cr
     <tensorflow.contrib.learn.python.learn.datasets.mnist.DataSet object at 0x0000024EEA70C358>
@@ -287,7 +289,7 @@ batch_ys must be the 100 images' label array, let's confirm:
      [ 0.  0.  1.  0.  0.  0.  0.  0.  0.  0.]
      [ 0.  1.  0.  0.  0.  0.  0.  0.  0.  0.]
      [ 1.  0.  0.  0.  0.  0.  0.  0.  0.  0.]]  <----- Yes! labels.
-    #55> batch_ys :> shape . cr #<--------------------- confirm it's dimention
+    #55> batch_ys :> shape . cr #<--------------------- confirm its dimention
     (100, 10)  <--------------------------------------- correct! 
     #55>
      
@@ -316,7 +318,7 @@ What about some other run of the 1000 loops?
     #55>    
 
 Now let's enable breakpoint #66 in ```compute_accuracy``` function. This is where many 
-learners were blocked because unfamiliar tensorflow functions are involved. See the 
+learners were blocked because unfamiliar Tensorflow functions are involved. See the 
 line with '#66> ' in the following snippet? That's the peforth breakpoint we add.
 
 
@@ -335,7 +337,7 @@ it run into breakpoint #66 and stop:
     #55> py: vm.debug=66
     #55> exit
     #66>
-    #66> words    <----------- again, let's see what we have get 
+    #66> words    <----------- again, let's see what we have got 
     ... snip ...
     WshShell description expected_rstack expected_stack test-result [all-pass] 
     *** all-pass [r r] [d d] [p p] inport OK dir keys --- result accuracy 
@@ -398,15 +400,15 @@ Take a closer look at the digit number 0 :
     
 Awesome! Every digit has a score. 
 
-It's getting clearer that y_pre is a predicted version of v_ys. 
-Let's see v_ys :
+We are getting clearer that ```y_pre``` is a predicted version of ```v_ys```. 
+Let's see ```v_ys``` :
 
     #66> v_ys :> [0] . cr
     [ 0.  0.  0.  0.  0.  0.  0.  1.  0.  0.]  <----- Correct! it's 7
 
 Now I want to find an incorrect or low score prediction 
-and see how the image look like. We already know the accuracy is ~87%
-at best so let's dump 20 images' in y_pre predicted and their v_ys label:
+and see how the image look like. We already know the accuracy is ~80%
+at best so let's dump 20 images' ```y_pre``` predicted results and their corresponding ```v_ys``` label. 
 
 
      .------- specify the index of an image 
@@ -434,8 +436,8 @@ at best so let's dump 20 images' in y_pre predicted and their v_ys label:
     19 y_pre :> [tos()] . cr v_ys :> [pop()] . cr cr cr
 
 The above block may look strange but it's not totally new, right? We have been using 
-FORTH syntax for a while. You probably understand it already. Copy-paste 
-to run it and get the following results:
+FORTH syntax for a while. You probably can understand them already. Copy-paste 
+to run them all together and get the following results:
     
     #66> 1 y_pre :> [tos()] . cr v_ys :> [tos()] . cr cr cr
     [  8.22821278e-09   5.53571863e-06   2.81200599e-04   1.85349958e-08
@@ -447,7 +449,7 @@ to run it and get the following results:
     #66> 2 y_pre :> [tos()] . cr v_ys :> [tos()] . cr cr cr
     [  6.57357450e-04   9.31985438e-01   5.40157722e-04   1.72531046e-02
        2.08571029e-04   1.55871039e-05   1.29080110e-03   2.65645329e-04
-       1.91582646e-03   4.58675623e-02]
+       1.91582646e-03   4.58675623e-02]    # this one is correct
     [ 0.  1.  0.  0.  0.  0.  0.  0.  0.  0.]
 
 
@@ -471,19 +473,23 @@ We can see any image now. Let's see the index 1:
     
     v_xs :> [1] py> tuple(pop()*256) pic :: putdata(pop()) pic :: show()    
     
-Stupid computer, I don't think it looks like a 6 at all!
-And index 2:
+![fig1](https://github.com/hcchengithub/jeforth.3we/wiki/peforth/Example-7-Tensorflow-learners-dont-give-up1.jpg)
+
+Stupid computer! I don't think it looks like a 6 at all!
 
     v_xs :> [2] py> tuple(pop()*256) pic :: putdata(pop()) pic :: show()    
 
-It's a beautiful '1' and is predected correctly. And index 3:
+And index 2 ... It's a beautiful '1' and is predected correctly. 
 
     v_xs :> [3] py> tuple(pop()*256) pic :: putdata(pop()) pic :: show()    
 
-I can see why the neural network thinks it's 5.
+And index 3:
+
+![fig2](https://github.com/hcchengithub/jeforth.3we/wiki/peforth/Example-7-Tensorflow-learners-dont-give-up2.jpg)
+
+I can imagin why the neural network thinks it's 5.
 
 
-    
 The rest of ```compute_accuracy``` function, 
 
 
@@ -491,13 +497,136 @@ The rest of ```compute_accuracy``` function,
     accuracy = tf.reduce_mean(tf.cast(correct_prediction, tf.float32))
 
 
-, must be doing the comparison between y_pre v_ys. And the result is reduced to a float 
-number, as we have seen above (the 0.1129). To trace the two lines is fun too. I 
-encurage you guys to do it. You need to know that to see a tensor you have to use a 
-tf.Session() to run it. I actually wrote my own function to do the comparison and 
-got the same result. I am afraid that this page has been too long and I need some
-rests. If you have any question please leave it to the peforth's "issues" on GitHub.
-Thank you for reading, have fun!
+, must be doing the comparison between ```y_pre``` and ```v_ys```. The result is 
+reduced to a float number, as we have seen above (the 0.1129). To trace the two lines 
+is fun too. We have seen ```y_pre``` above, it's a matrix of scores (probabilities). Now we are going 
+to see what is ``` tf.argmax(y_pre,1) ```: 
+
+    #66> tf :> argmax(v('y_pre'),1) . cr
+    Tensor("ArgMax_42:0", shape=(10000,), dtype=int64)
+    #66>
+
+The result is a Tensor. To see it we need a tf.Session() to run it. 
+Ah! we do have the ```sess``` in words already. So let's use it to see the 
+above Tensor:
+
+    \ Give the Tensor a FORTH value name "my-tensor-1"
+    #66> tf :> argmax(v('y_pre'),1) value my-tensor-1 // ( -- tensor ) argmax(v('y_pre'),1)
+    #66> my-tensor-1 . cr  \ check it out
+    Tensor("ArgMax_43:0", shape=(10000,), dtype=int64)   <--- correct!
+    #66>
+
+    \ Now see it
+    #66> sess :> run(v('my-tensor-1')) . cr
+    [3 7 6 ..., 3 6 8]   <------- How y_pre be converted to this?
+
+    #66> y_pre :> [0] . cr
+    [  1.27353007e-04   4.01394248e-01   2.24491670e-09   4.69255477e-01
+       4.44573313e-02   4.24065953e-03   6.81652054e-02   1.23441424e-02
+       1.51243876e-05   4.12246322e-07]
+    \ The maximum is 3 in index #0, I think I understand now!   
+       
+    \ In index #1, I guess the maximum is .... 7 , Yes!!!    
+    #66> y_pre :> [1] . cr
+    [  2.64560010e-12   1.29434488e-06   1.33987471e-01   2.41195437e-08
+       1.11574991e-05   1.03417278e-07   1.52959674e-05   8.20579410e-01
+       3.81905003e-04   4.50233184e-02]
+    #66>
+    
+Do you get it? I don't explain it buddy. It's simple and my explanation will
+be just annoying. Now let's use sess to see somthing else by the way:
+    
+    \ How many images? 
+    #66> sess :> run(v('my-tensor-1')) count . cr
+    10000
+    \ Where 'count' is a peforth command
+    
+    \ Check shape gets the same info too
+    #66> sess :> run(v('my-tensor-1')).shape . cr
+    (10000,)
+    
+    \ What type is the ArgMax Tensor's return value?
+    #66> sess :> run(v('my-tensor-1')) type . cr
+    <class 'numpy.ndarray'>
+    
+    \ The return value is an ndarray, what about its cells?
+    #66> sess :> run(v('my-tensor-1'))[0] type . cr
+    <class 'numpy.int64'>  <----- Oooops!! v_pre scores are floats
+    
+I have no question now. Just for fun, let's see
+correct_prediction
+
+    \ I guess it's a Tensor too
+    #66> correct_prediction . cr
+    Tensor("Equal_20:0", shape=(10000,), dtype=bool)  <---- Yeah!
+
+    \ Let's see the 0~50 cells of it 
+    #66> sess :> run(v('correct_prediction'))[0:50] . cr
+    [False False False False  True False False False False False False False
+     False False False False False False False False False False False False
+      True False False  True False False False False False False False  True
+     False False False False False False False False False False False False
+      True  True]
+    #66>
+
+I think ```tf.cast(correct_prediction, tf.float32)``` is to convert
+the [False,True,True,....] array to [0,1.0,1.0...] array. Let's see:
+
+This time we use a different way, a ```<py> ... </py>``` in-line 
+python block, to do the same thing:
+
+    <py>
+        correct_prediction = v('correct_predi\ction')
+        tf = v('tf')
+        cast = tf.cast(correct_prediction, tf.float32)
+        push(cast)
+    </py> 
+    value cast // ( -- Tensor ) tf.cast(correct_prediction, tf.float32)
+
+Use Ctrl-D multi-line input to copy-paste the above block and get
+the 'cast' FORTH word which is a value. Let's see it :
+
+    \ I guess it's a Tensor
+    #66> cast . cr
+    Tensor("Cast_21:0", shape=(10000,), dtype=float32)  <---- Yes!!
+    
+    \ Use sess to run it and so as to see it 
+    #66> sess :> run(v('cast')) . cr
+    [ 0.  0.  0. ...,  0.  0.  0.]   <---- Array of [True,False...]
+    #66>                                   converted to 0.'s and 1.0's
+
+Now it's your turn to see what ```tf.reduce_mean()``` does. 
+If you are not going to do that today, we let the program
+continue by giving ```vm.debug``` a value not 55 nor 66:
+
+
+    #66>
+    #66> py: vm.debug=False
+    #66> exit
+    0.1015
+    0.6588
+    0.7501
+    0.7939
+    0.8097
+    0.8218
+    0.8356
+    0.8425
+    0.8461
+    0.8559
+    0.8603
+    0.8578
+    0.8638
+    0.8685
+    0.8706
+    0.8732
+    0.8739
+    0.8791
+    0.8791
+    0.8798
+    OK    
+
+If you have any question please leave it to the peforth's "issues" on GitHub. Thank you 
+for reading, have fun! 
 
 #### May the FORTH be with you!
 
