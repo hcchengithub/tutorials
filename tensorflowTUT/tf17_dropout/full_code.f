@@ -92,7 +92,7 @@
     sess.run(init)
     for i in range(500):
         # here to determine the keeping probability
-        sess.run(train_step, feed_dict={xs: X_train, ys: y_train, keep_prob: 0.5})
+        sess.run(train_step, feed_dict={xs: X_train, ys: y_train, keep_prob:1})
         if i % 50 == 0:
             # record loss
             train_result = sess.run(merged, feed_dict={xs: X_train, ys: y_train, keep_prob: 1})
@@ -334,7 +334,7 @@
     77> / . cr
     0.3005008347245409  <--------- test_size=.3
 
-    77> keep_prob . cr  <---- [ ] 老師說這啥？
+    77> keep_prob . cr  <---- [x] 老師說這啥？ 就是 dropout 的比例，用來改善 over fitting 的土方法！！
     Tensor("Placeholder:0", dtype=float32)
     77> xs . cr
     Tensor("Placeholder_1:0", shape=(?, 64), dtype=float32)
@@ -425,4 +425,8 @@
     無需用 tensorboard 這東西，平添學習負擔。See the Ynote , excel really 
     works too.
     
-    
+    \ 訓練時，不用 dropout 也就是 keep_prob 為 1 時，看看差距怎樣
+        sess.run(train_step, feed_dict={xs: X_train, ys: y_train, keep_prob:1})
+        
+        
+        
