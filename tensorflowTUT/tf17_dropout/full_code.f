@@ -109,6 +109,9 @@
 
     stop
 
+    \ 本課的主題是 over fitting 
+    \ Dropout 這個土方法用來改善 over fitting 的問題有奇效。
+    
     \ 先成功執行 tutorial
 
     執行後，會在工作 directory 下產生 'logs' folder. 可以把它整個搬到你喜歡的地方去使用。
