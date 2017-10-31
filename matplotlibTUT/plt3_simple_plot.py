@@ -17,3 +17,5 @@ y = 2*x + 1
 # y = x**2
 plt.plot(x, y)
 plt.show()
+import peforth
+peforth.ok(loc=locals(),cmd=":> [0] inport")
