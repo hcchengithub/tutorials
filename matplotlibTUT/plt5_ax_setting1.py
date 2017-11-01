@@ -36,3 +36,25 @@ plt.xticks(new_ticks)
 plt.yticks([-2, -1.8, -1, 1.22, 3],
            [r'$really\ bad$', r'$bad$', r'$normal$', r'$good$', r'$really\ good$'])
 plt.show()
+import peforth;peforth.ok(loc=locals(),cmd=":> [0] inport")
+
+'''
+
+plt :: plot()  \ 空的 plot() 或甚至没有 plot() 也能 show() ! 如下其他例子
+plt :: show()
+
+\ 有任何东西就能 show() 了，吧！？
+plt :: xlim((-1,2))
+plt :: show()
+
+\ Specify Y axis ticks (not label)
+plt ::~ yticks([-2, -1, 1.22, 3, 100],[r'$really\ bad$', r'$bad$', r'$normal$', r'$good$', r'$really\ good$'])
+plt :: show()
+
+
+\ Specify X axis ticks (not label)
+plt ::~ xticks([-2, -1, 1.22, 3, 100],[r'$really\ bad$', r'$bad$', r'$normal$', r'$good$', r'$really\ good$'])
+plt :: show()
+
+'''
+

@@ -27,3 +27,21 @@ plt.plot(x, y2)
 # plot the second curve in this figure with certain parameters
 plt.plot(x, y1, color='red', linewidth=1.0, linestyle='--')
 plt.show()
+import peforth;peforth.ok(loc=locals(),cmd=":> [0] inport")
+
+
+'''
+    \ Shows y1 and y2 plot on two different figure (window) at the same time
+    OK plt :: figure() x y1 plt :: plot(pop(1),pop())
+    OK plt :: figure() x y2 plt :: plot(pop(1),pop()) plt :: show()
+
+    \ show() y1 and y2 plots in the same figure
+    OK x y1 plt :: plot(pop(1),pop())
+    OK x y2 plt :: plot(pop(1),pop()) plt :: show()
+
+    \ show() y1 and pause, close the y1 plot then y2 plot will be shown
+    OK x y1 plt :: plot(pop(1),pop()) plt :: show() 
+    OK x y2 plt :: plot(pop(1),pop()) plt :: show()
+    OK
+'''
+
