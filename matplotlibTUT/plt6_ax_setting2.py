@@ -36,6 +36,7 @@ plt.yticks([-2, -1.8, -1, 1.22, 3],
 
 # gca = 'get current axes'    
 ax = plt.gca()
+
 '''
 # set_ticks_position() and set_position() both 或之一設過以後再用 peforth
 # 改，軸線都亂掉，可能要先把設過的消掉才行。
