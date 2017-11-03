@@ -1,3 +1,7 @@
+
+import peforth; peforth.ok(loc=locals(),cmd="include xray.f")
+
+
 # View more python tutorials on my Youtube and Youku channel!!!
 
 # Youtube video tutorial: https://www.youtube.com/channel/UCdyjiB5H8Pu7aDTNVXTTpcg

@@ -1,4 +1,5 @@
 
+    \ TUT url http://list.youku.com/albumlist/show/id_28097045.html?
 
     \ Change DOSBox title
     s" dos title " __main__ :> __file__ + dictate 
@@ -14,6 +15,20 @@
     ." Error!! You reached never land, what's the problem?" cr
     ." Press enter to continue but don't!" accept
     
+    \ Study 三寶
+    \ DOS Box title 
+    import peforth; peforth.ok(loc=locals(),cmd="include xray.f")
+    \ Breakpoint
+    peforth.ok('11> ',cmd="parent inport")
+    \ Lab of copy-paste 
+    <accept> <text> 
+    locals().update(harry_port());  # bring in all things
+    # ---------------------------------------------------------------------------
+    all locals() can use 
+    # ---------------------------------------------------------------------------
+    </text> -indent py: exec(pop())
+    </accept> dictate 
+
     \ Breakpoint
     import peforth;peforth.ok('11> ',loc=locals(),cmd=":> [0] inport")
 
@@ -29,7 +44,8 @@
         dictate("### marker ---xray---"); outport(locals()) # bring out all locals()
         </text> -indent py: exec(pop())
         </accept> dictate 
-    
+
+        
     \ Imports 
     \ 把 mnist_data 放在了公共的地方，改由 peforth 來 import 
     
