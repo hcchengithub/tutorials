@@ -16,18 +16,19 @@
     ." Press enter to continue but don't!" accept
     
     \ Study 三寶
-    \ DOS Box title 
-    import peforth; peforth.ok(loc=locals(),cmd="include xray.f")
-    \ Breakpoint
-    peforth.ok('11> ',cmd="parent inport")
-    \ Lab of copy-paste 
-    <accept> <text> 
-    locals().update(harry_port());  # bring in all things
-    # ---------------------------------------------------------------------------
-    all locals() can use 
-    # ---------------------------------------------------------------------------
-    </text> -indent py: exec(pop())
-    </accept> dictate 
+    \ http://list.youku.com/albumlist/show/id_28097045.html?
+    \ 1. DOS Box title 
+        import peforth; peforth.ok(loc=locals(),cmd="include xray.f")
+    \ 2. Breakpoint
+        peforth.ok('11> ',cmd="parent inport")
+    \ 3. Lab of copy-paste
+        <accept> <text> 
+        # ---------------------------------------------------------------------------
+        all locals() can use 
+        # ---------------------------------------------------------------------------
+        </text> -indent py: exec(pop(),harry_port()) \ If only globals is given, locals defaults to it.
+        </accept> dictate 
+
 
     \ Breakpoint
     import peforth;peforth.ok('11> ',loc=locals(),cmd=":> [0] inport")
